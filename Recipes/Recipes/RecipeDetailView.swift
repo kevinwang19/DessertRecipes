@@ -13,7 +13,7 @@ struct RecipeDetailView: View {
     @StateObject var viewModel = RecipesViewModel()
     
     init(meal: Meal) {
-        self.meal=meal
+        self.meal = meal
         UILabel.appearance(whenContainedInInstancesOf: [UINavigationBar.self]).adjustsFontSizeToFitWidth = true
     }
     
@@ -33,22 +33,28 @@ struct RecipeDetailView: View {
                             .frame(width: 300, height: 250)
                             .background(Color.gray)
                             .cornerRadius(15)
+                            
                             if let drinkAlternate = details.strDrinkAlternate {
-                                Text("Drink Alternate: " + drinkAlternate)
+                                SmallSubtitle(text: "Drink Alternate", value: drinkAlternate)
                             }
-                            Text("Category: " + details.strCategory)
-                            Text("Area: " + details.strArea)
+                            
+                            SmallSubtitle(text: "Category", value: details.strCategory)
+                            SmallSubtitle(text: "Area", value: details.strArea)
+                            
+                            if let tags = details.strTags {
+                                SmallSubtitle(text: "Tags", value: tags)
+                            }
                             Spacer()
                         }
-                        Subtitle(text: "Ingredients")
+                        LargeSubtitle(text: "Ingredients")
                         
                         ingredientsList
                         
-                        Subtitle(text: "Instructions")
+                        LargeSubtitle(text: "Instructions")
                         
                         Text(details.strInstructions)
                         
-                        Subtitle(text: "Video")
+                        LargeSubtitle(text: "Video")
                         
                         if let url = details.strYoutube {
                             VideoView(url: url)
@@ -56,9 +62,25 @@ struct RecipeDetailView: View {
                                 .aspectRatio(contentMode: .fill)
                                 .cornerRadius(10)
                         }
-                        //if let tags = details.strTags {
-                        //    Text("Tags: " + tags)
-                        //}
+                        
+                        if details.strSource != nil || details.strImageSource != nil {
+                            let source = details.strSource ?? ""
+                            let imageSource = details.strImageSource ?? ""
+                            LargeSubtitle(text: "Sources")
+                            Text(.init(source))
+                            Text(.init(imageSource))
+                        }
+                        
+                        Group {
+                            if let creativeCommonsConfirmed = details.strCreativeCommonsConfirmed {
+                                Text("Creative Commons Confirmed: " + creativeCommonsConfirmed)
+                            }
+                            if let dateModified = details.dateModified {
+                                Text("DateModified: " + dateModified)
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.top, 20)
                     }
                     .padding(30)
                 }
@@ -81,7 +103,20 @@ struct RecipeDetailView: View {
        }
 }
 
-struct Subtitle: View {
+struct SmallSubtitle: View {
+    let text: String
+    let value: String
+    
+    var body: some View {
+        HStack {
+            Text(text + ":")
+                .bold()
+            Text(value)
+        }
+    }
+}
+
+struct LargeSubtitle: View {
     let text: String
     
     var body: some View {
@@ -102,7 +137,6 @@ struct VideoView: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: WKWebView, context: Context) {
-        print(url)
         guard let youtubeURL = URL(string: url) else {
             return
         }
