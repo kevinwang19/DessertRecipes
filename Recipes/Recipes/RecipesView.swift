@@ -14,55 +14,35 @@ struct RecipesView: View {
         NavigationView {
             List {
                 ForEach(viewModel.meals, id: \.self) { meal in
-                    HStack {
-                        MealImage(url: meal.strMealThumb)
-                        Text(meal.strMeal)
-                            .bold()
-                            .padding(.leading, 10)
+                    NavigationLink {
+                        RecipeDetailView(meal: meal)
+                    } label: {
+                        HStack {
+                            AsyncImage(url: URL(string: meal.strMealThumb)) { image in
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                            } placeholder: {
+                                ProgressView()
+                            }
+                                .frame(width: 100, height: 100)
+                                .background(Color.gray)
+                                .cornerRadius(15)
+                            Text(meal.strMeal)
+                                .font(.title3)
+                                .bold()
+                                .padding(.leading, 10)
+                        }
+                        .padding(5)
                     }
-                    .padding(5)
                 }
             }
+            .padding(.top, 10)
+            .listStyle(PlainListStyle())
             .navigationTitle("Desserts")
             .onAppear {
                 viewModel.fetchMeals()
             }
         }
-    }
-}
-
-struct MealImage: View {
-    let url: String
-    @State var data: Data?
-    
-    var body: some View {
-        if let data = data, let image = UIImage(data: data) {
-            Image(uiImage: image)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: 80, height: 100)
-                .background(Color.gray)
-        }
-        else {
-            Image(systemName: "image")
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: 80, height: 100)
-                .background(Color.gray)
-                .onAppear {
-                    fetchImage()
-                }
-        }
-    }
-                    
-    private func fetchImage() {
-        guard let url = URL(string: url) else {
-            return
-        }
-        
-        let task = URLSession.shared.dataTask(with: url) { data, _, _ in
-            self.data = data
-        }
-        task.resume()
     }
 }
