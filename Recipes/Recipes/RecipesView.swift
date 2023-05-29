@@ -13,10 +13,13 @@ struct RecipesView: View {
     var body: some View {
         NavigationView {
             List {
+                // Iterate through the array of desserts
                 ForEach(viewModel.meals, id: \.self) { meal in
                     NavigationLink {
+                        // Go to detail view if a row is selected
                         RecipeDetailView(meal: meal)
                     } label: {
+                        // Show dessert image and name
                         HStack {
                             AsyncImage(url: URL(string: meal.strMealThumb)) { image in
                                 image
@@ -40,6 +43,7 @@ struct RecipesView: View {
             .padding(.top, 10)
             .listStyle(PlainListStyle())
             .navigationTitle("Desserts")
+            // Retrieve array of desserts from the API
             .onAppear {
                 viewModel.fetchMeals()
             }
