@@ -63,24 +63,25 @@ struct RecipeDetailView: View {
                                 .cornerRadius(10)
                         }
                         
-                        if details.strSource != nil || details.strImageSource != nil {
-                            let source = details.strSource ?? ""
-                            let imageSource = details.strImageSource ?? ""
-                            LargeSubtitle(text: "Sources")
-                            Text(.init(source))
-                            Text(.init(imageSource))
-                        }
-                        
                         Group {
-                            if let creativeCommonsConfirmed = details.strCreativeCommonsConfirmed {
-                                Text("Creative Commons Confirmed: " + creativeCommonsConfirmed)
+                            if details.strSource != nil || details.strImageSource != nil {
+                                let source = details.strSource ?? ""
+                                let imageSource = details.strImageSource ?? ""
+                                LargeSubtitle(text: "Sources")
+                                Text(.init(source))
+                                Text(.init(imageSource))
                             }
-                            if let dateModified = details.dateModified {
-                                Text("DateModified: " + dateModified)
+                            Group {
+                                if let creativeCommonsConfirmed = details.strCreativeCommonsConfirmed {
+                                    Text("Creative Commons Confirmed: " + creativeCommonsConfirmed)
+                                }
+                                if let dateModified = details.dateModified {
+                                    Text("DateModified: " + dateModified)
+                                }
                             }
+                            .padding(.top, 20)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.top, 20)
                     }
                     .padding(30)
                 }
@@ -113,6 +114,9 @@ struct SmallSubtitle: View {
                 .bold()
             Text(value)
         }
+        .scaledToFill()
+        .minimumScaleFactor(0.5)
+        .lineLimit(1)
     }
 }
 
@@ -140,6 +144,7 @@ struct VideoView: UIViewRepresentable {
         guard let youtubeURL = URL(string: url) else {
             return
         }
+        uiView.scrollView.isScrollEnabled = false
         uiView.load(URLRequest(url: youtubeURL))
     }
 }
